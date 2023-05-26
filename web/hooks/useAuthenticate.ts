@@ -1,7 +1,7 @@
 import { useSDK } from "@thirdweb-dev/react";
 
 export default function useAuthenticate() {
-  const domain = "example.com";
+  const domain = "auth.sovietgirls.su";
   const sdk = useSDK();
 
   async function login() {

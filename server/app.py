@@ -21,7 +21,7 @@ def login():
     payload = LoginPayload.from_json(request.json["payload"])
 
     # Generate an access token with the SDK using the signed payload
-    domain = "example.com"
+    domain = "auth.sovietgirls.su"
     token = sdk.auth.generate_auth_token(domain, payload)
 
     res = make_response()
@@ -49,7 +49,7 @@ def authenticate():
     if not token:
         return "Unauthorized", 401
     
-    domain = "example.com"
+    domain = "auth.sovietgirls.su"
 
     try:
         address = sdk.auth.authenticate(domain, token)
