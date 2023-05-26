@@ -18,13 +18,7 @@ def login():
         return "Admin private key not set", 400
 
     sdk = ThirdwebSDK.from_private_key(private_key, "polygon")
-    contract_sdk = ThirdwebSDK("polygon")
     payload = LoginPayload.from_json(request.json["payload"])
-    contract = contract_sdk.get_contract("0x15F4272460062b835Ba0abBf7A5E407F3EF425d3")
-    balance = contract.erc721.balance_of(request.json["payload"]["payload"]["address"])
-    print(balance)
-    if balance == 0:
-        return "Unauthorized", 401
 
     # Generate an access token with the SDK using the signed payload
     domain = "example.com"
@@ -59,8 +53,12 @@ def authenticate():
 
     try:
         address = sdk.auth.authenticate(domain, token)
-    except Exception as e:
-        print(e)
+        contract_sdk = ThirdwebSDK("polygon")
+        contract = contract_sdk.get_contract("0x15F4272460062b835Ba0abBf7A5E407F3EF425d3")
+        balance = contract.erc721.balance_of(address)
+        if balance == 0:
+            return "Unauthorized", 401
+    except:
         return "Unauthorized", 401
     
     link = vk.messages.getInviteLink(peer_id=os.getenv("PEER_ID"), reset=1)
