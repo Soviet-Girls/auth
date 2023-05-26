@@ -108,7 +108,7 @@ const Home: NextPage = () => {
             {isLoggedIn ? (
               <button onClick={logoutWallet}>Отозвать подпись</button>
             ) : (
-              <button onClick={signInWithEthereum}>2. Зайти в кошелёк</button>
+              <button onClick={signInWithEthereum}>2. Подписать сообщение</button>
             )}
           </div>
         )}
