@@ -1,4 +1,6 @@
 .env
+*.pyc
 /server/venv
 /web/node_modules
 /web/.next
+/server/__pycache__
