@@ -3,7 +3,11 @@ import type { NextPage } from "next";
 import useAuthenticate from "../hooks/useAuthenticate";
 import { useAddress, useDisconnect, useMetamask } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { set } from "zod";
+const VkAuth = dynamic(() => import("../components/vkAuth"), {
+  ssr: false,
+});
 
 const Home: NextPage = () => {
   const address = useAddress();
@@ -11,6 +15,7 @@ const Home: NextPage = () => {
   const connectWithMetamask = useMetamask();
   const { login, authenticate, logout } = useAuthenticate();
 
+  const [user, setUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authMessage, setAuthMessage] = useState("N/A");
   const [isMetamaskConnected, setIsMetamaskConnected] = useState(false);
@@ -27,7 +32,7 @@ const Home: NextPage = () => {
   };
 
   const authenticatedRequest = async () => {
-    const res = await authenticate();
+    const res = await authenticate(user.id);
     if (res.ok) {
       const address = await res.json();
       setAuthMessage(`Succesfully authenticated! Chat adress: ${address}`);
@@ -56,31 +61,12 @@ const Home: NextPage = () => {
     setAuthMessage("N/A");
   };
 
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <>
-      {/*<header*/}
-      {/*  style={{*/}
-      {/*    width: "100%",*/}
-      {/*    height: "50px",*/}
-      {/*    position: "sticky",*/}
-      {/*    top: 0,*/}
-      {/*    backgroundColor: "rgba(50, 50, 50, 0.8);",*/}
-      {/*    backdropFilter: "blur(10px)",*/}
-      {/*      boxShadow: "0 1px 20px rgba(0, 0, 0, 0.7)"*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  <div*/}
-      {/*    style={{*/}
-      {/*      display: "flex",*/}
-      {/*      width: "100%",*/}
-      {/*      height: "100%",*/}
-      {/*      justifyContent: "center",*/}
-      {/*      alignItems: "center",*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    Soviet Girls*/}
-      {/*  </div>*/}
-      {/*</header>*/}
       <div
         style={{
           width: "100vw",
@@ -91,14 +77,22 @@ const Home: NextPage = () => {
           flexDirection: "column",
         }}
       >
-        <div className={"connect_container"}>
-          {!address ? (
-            <button onClick={connectMetamask}>1. Подключить кошелёк</button>
-          ) : (
-            <button onClick={disconnectMetamask}>Отключить кошелёк</button>
-          )}
-        </div>
-        {isMetamaskConnected && (
+        <VkAuth user={user} setUser={setUser} disconnectMetamask={disconnectMetamask} />
+        {user.id && (
+          <div
+            className={"connect_container"}
+            style={{
+              marginTop: 10,
+            }}
+          >
+            {!address ? (
+              <button onClick={connectMetamask}>1. Подключить кошелёк</button>
+            ) : (
+              <button onClick={disconnectMetamask}>Отключить кошелёк</button>
+            )}
+          </div>
+        )}
+        {user.id && isMetamaskConnected && (
           <div
             style={{
               marginTop: 10,
@@ -112,7 +106,7 @@ const Home: NextPage = () => {
             )}
           </div>
         )}
-        {isMetamaskConnected && isLoggedIn && (
+        {user.id && isMetamaskConnected && isLoggedIn && (
           <div style={{ marginTop: 10 }} className={"connect_container"}>
             <button onClick={authenticatedRequest}>3. Получить ссылку</button>
           </div>
