@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import os
 import vk_api
 
+from check import check_owner
+
 app = Flask(__name__)
 
 vk_session = vk_api.VkApi(token=os.getenv("VK_TOKEN"))
@@ -53,12 +55,11 @@ def authenticate():
 
     try:
         address = sdk.auth.authenticate(domain, token)
-        contract_sdk = ThirdwebSDK("polygon")
-        contract = contract_sdk.get_contract("0x15F4272460062b835Ba0abBf7A5E407F3EF425d3")
-        balance = contract.erc721.balance_of(address)
-        if balance == 0:
+        owner = check_owner(address)
+        if owner is False:
             return "Unauthorized", 401
-    except:
+    except Exception as ex:
+        print(ex)
         return "Unauthorized", 401
     
     link = vk.messages.getInviteLink(peer_id=os.getenv("PEER_ID"), reset=1)
