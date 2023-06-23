@@ -15,9 +15,12 @@ export default function useAuthenticate() {
     });
   }
 
-  async function authenticate() {
+  async function authenticate(uid: string) {
     const res = await fetch("/api/authenticate", {
       method: "POST",
+      body: JSON.stringify({
+        uid
+      })
     });
     return res;
   }
